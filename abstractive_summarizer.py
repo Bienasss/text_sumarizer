@@ -55,7 +55,9 @@ class AbstractiveSummarizer:
         
         return chunks
     
-    def summarize(self, text: str, max_length: int = None, min_length: int = None) -> str:
+    def summarize(self, text: str, max_length: int = None, min_length: int = None, 
+                  num_beams: int = 4, do_sample: bool = False, 
+                  no_repeat_ngram_size: int = 3) -> str:
         processed_text = self.preprocessor.preprocess(text)
         
         max_len = max_length or self.max_length
@@ -67,7 +69,9 @@ class AbstractiveSummarizer:
                     processed_text,
                     max_length=max_len,
                     min_length=min_len,
-                    do_sample=False
+                    num_beams=num_beams,
+                    do_sample=do_sample,
+                    no_repeat_ngram_size=no_repeat_ngram_size
                 )
                 return result[0]['summary_text']
             except Exception as e:
@@ -82,7 +86,9 @@ class AbstractiveSummarizer:
                         chunk,
                         max_length=max_len,
                         min_length=min_len,
-                        do_sample=False
+                        num_beams=num_beams,
+                        do_sample=do_sample,
+                        no_repeat_ngram_size=no_repeat_ngram_size
                     )
                     summaries.append(result[0]['summary_text'])
                 except Exception as e:
@@ -94,7 +100,9 @@ class T5Summarizer(AbstractiveSummarizer):
     def __init__(self, model_name: str = "t5-small", max_length: int = 512, min_length: int = 50):
         super().__init__(model_name=model_name, max_length=max_length, min_length=min_length)
     
-    def summarize(self, text: str, max_length: int = None, min_length: int = None) -> str:
+    def summarize(self, text: str, max_length: int = None, min_length: int = None,
+                  num_beams: int = 4, do_sample: bool = False,
+                  no_repeat_ngram_size: int = 3) -> str:
         processed_text = self.preprocessor.preprocess(text)
         
         max_len = max_length or self.max_length
@@ -116,7 +124,9 @@ class T5Summarizer(AbstractiveSummarizer):
                     max_length=max_len,
                     min_length=min_len,
                     length_penalty=2.0,
-                    num_beams=4,
+                    num_beams=num_beams,
+                    do_sample=do_sample,
+                    no_repeat_ngram_size=no_repeat_ngram_size,
                     early_stopping=True
                 )
             
